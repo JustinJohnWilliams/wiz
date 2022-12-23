@@ -51,10 +51,32 @@ function __wiz-light-info-raw() {
 }
 
 function __wiz-light-info-all() {
+  results=$(mktemp)
   for key ("${(@k)lights}"); do
+    result=$(mktemp)
     info=$(__wiz-light-info-for $key)
-    echo $info | jq
+    local id=$(echo $info | jq -r '.id')
+    local ip=$(echo $info | jq -r '.ip')
+    local state=$(echo $info | jq -r '.state')
+    local scene=$(echo $info | jq -r '.scene')
+    local r=$(echo $info | jq -r '.r')
+    local g=$(echo $info | jq -r '.g')
+    local b=$(echo $info | jq -r '.b')
+    cat <<-EOF > "$result"
+    {
+      "id":     "$id",
+      "ip":     "$ip",
+      "state":  "$state",
+      "scene":  "$scene",
+      "r":      "$r",
+      "g":      "$g",
+      "b":      "$b"
+    }
+EOF
+    jq . "${result}" >> $results
   done
+
+  jq -s . "${results}"
 }
 
 function __wiz-light-info-for() {
@@ -63,9 +85,26 @@ function __wiz-light-info-for() {
   cmd='{"method":"getPilot","params":{}}'
   results=$(echo $cmd | nc -u -w 1 $ip $PORT)
   sceneId="$(echo $results | jq '.result.sceneId')"
+  state="$(echo $results | jq '.result.state')"
+  r="$(echo $results | jq '.result.r')"
+  g="$(echo $results | jq '.result.g')"
+  b="$(echo $results | jq '.result.b')"
   scene=$(__get_scene_name_from_id $sceneId)
-  echo $results | jq --arg id $name --arg ip $ip --arg scene $scene '{id: $id, ip: $ip, state: .result.state, scene: $scene, r: .result.r, g: .result.g, b: .result.b}'
+  
+  body=$(mktemp)
+  cat <<-EOF > "$body"
+  {
+    "id":     "$name",
+    "ip":     "$ip",
+    "state":  "$state",
+    "scene":  "$scene",
+    "r":      "$r",
+    "g":      "$g",
+    "b":      "$b"
+  }
+EOF
 
+  jq . "${body}"
 }
 
 function __wiz-light-set() {
