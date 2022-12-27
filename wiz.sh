@@ -232,18 +232,18 @@ wiz_scenes=(
 
 typeset -A wiz_home_macs
 wiz_home_macs=(
-  "nightstand_l" "19:db:56:ea:63:82"
-  "nightstand_r" "a1:23:26:e4:aa:dc"
-  "kitchen"	 "20:89:95:36:a5:a6"
-  "living"	 "fe:51:b5:cd:7e:28"
+  "nightstand" "6c:29:90:4c:69:aa"
+  "bennett_r"  "d8:a0:11:bc:3f:c9"
+  "bennett_l"  "d8:a0:11:3e:d:bc"
+  "tree"       "a8:bb:50:e1:30:48"
 )
 
 typeset -A wiz_office_macs
 wiz_office_macs=(
-  "andrew"  "87:f4:ae:fb:c8:b5"
-  "ben"     "a6:2d:b0:72:ab:5b"
-  "kevin"   "33:1f:e8:42:27:13"
-  "jj"      "7b:7e:1e:54:c5:76"
+  "andrew"  "d8:a0:11:be:cc:cb"
+  "ben"     "44:4f:8e:b:5b:a0"
+  "coffee"  "44:4f:8e:a:e0:f0"
+  "jj"      "44:4f:8e:a:92:72"
 )
 
 function __assign_lights() {
