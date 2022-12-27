@@ -80,11 +80,12 @@ EOF
 }
 
 function __wiz-light-info-for() {
-  ip=$(__wiz-light-ip-for $1)
   name=$1
-  cmd='{"method":"getPilot","params":{}}'
+  ip=$(__wiz-light-ip-for $name)
+  cmd='{"method":"getPilot"}'
   results=$(echo $cmd | nc -u -w 1 $ip $PORT)
   sceneId="$(echo $results | jq '.result.sceneId')"
+  scene=$(__get_scene_name_from_id $sceneId)
   [[ "$(echo $results | jq '.result.state')" == "true" ]] && state="on" || state="off"
   [[ "$(echo $results | jq '.result.r')" != "null" ]] && r="$(echo $results | jq '.result.r')" || r="0"
   [[ "$(echo $results | jq '.result.g')" != "null" ]] && g="$(echo $results | jq '.result.g')" || g="0"
@@ -92,7 +93,6 @@ function __wiz-light-info-for() {
   [[ "$(echo $results | jq '.result.c')" != "null" ]] && c="$(echo $results | jq '.result.c')" || c="0"
   [[ "$(echo $results | jq '.result.w')" != "null" ]] && w="$(echo $results | jq '.result.w')" || w="0"
   [[ "$(echo $results | jq '.result.dimming')" != "null" ]] && dimming="$(echo $results | jq '.result.dimming')" || dimming="0"
-  scene=$(__get_scene_name_from_id $sceneId)
 
   body=$(mktemp)
   cat <<-EOF > "$body"
@@ -131,6 +131,7 @@ function __wiz-light-set() {
       # wiz home set nightstand rgb 56 0 255 0 112
       ;;
     dimming)
+      # TODO: dimming between 10 and 100
       dimming=10
       if [ ! -z "$3" ] ; then dimming=$3; fi
       cmd='{"method":"setPilot","params":{"dimming":'"$dimming"'}}'
