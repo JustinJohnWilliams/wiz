@@ -59,18 +59,18 @@ function __wiz-light-info-all() {
     local ip=$(echo $info | jq -r '.ip')
     local state=$(echo $info | jq -r '.state')
     local scene=$(echo $info | jq -r '.scene')
-    local r=$(echo $info | jq -r '.r')
-    local g=$(echo $info | jq -r '.g')
-    local b=$(echo $info | jq -r '.b')
+    local rgb=$(echo $info | jq -r '.rgb')
+    local cw=$(echo $info | jq -r '.cw')
+    local dimming=$(echo $info | jq -r '.dimming')
     cat <<-EOF > "$result"
     {
-      "id":     "$id",
-      "ip":     "$ip",
-      "state":  "$state",
-      "scene":  "$scene",
-      "r":      "$r",
-      "g":      "$g",
-      "b":      "$b"
+      "id":       "$id",
+      "ip":       "$ip",
+      "state":    "$state",
+      "scene":    "$scene",
+      "rgb":      "$rgb",
+      "cw":       "$cw",
+      "dimming":  "$dimming"
     }
 EOF
     jq . "${result}" >> $results
@@ -85,22 +85,25 @@ function __wiz-light-info-for() {
   cmd='{"method":"getPilot","params":{}}'
   results=$(echo $cmd | nc -u -w 1 $ip $PORT)
   sceneId="$(echo $results | jq '.result.sceneId')"
-  state="$(echo $results | jq '.result.state')"
-  r="$(echo $results | jq '.result.r')"
-  g="$(echo $results | jq '.result.g')"
-  b="$(echo $results | jq '.result.b')"
+  [[ "$(echo $results | jq '.result.state')" == "true" ]] && state="on" || state="off"
+  [[ "$(echo $results | jq '.result.r')" != "null" ]] && r="$(echo $results | jq '.result.r')" || r="0"
+  [[ "$(echo $results | jq '.result.g')" != "null" ]] && g="$(echo $results | jq '.result.g')" || g="0"
+  [[ "$(echo $results | jq '.result.b')" != "null" ]] && b="$(echo $results | jq '.result.b')" || b="0"
+  [[ "$(echo $results | jq '.result.c')" != "null" ]] && c="$(echo $results | jq '.result.c')" || c="0"
+  [[ "$(echo $results | jq '.result.w')" != "null" ]] && w="$(echo $results | jq '.result.w')" || w="0"
+  [[ "$(echo $results | jq '.result.dimming')" != "null" ]] && dimming="$(echo $results | jq '.result.dimming')" || dimming="0"
   scene=$(__get_scene_name_from_id $sceneId)
-  
+
   body=$(mktemp)
   cat <<-EOF > "$body"
   {
-    "id":     "$name",
-    "ip":     "$ip",
-    "state":  "$state",
-    "scene":  "$scene",
-    "r":      "$r",
-    "g":      "$g",
-    "b":      "$b"
+    "id":       "$name",
+    "ip":       "$ip",
+    "state":    "$state",
+    "scene":    "$scene",
+    "rgb":      "$r $g $b",
+    "cw":       "$c $w",
+    "dimming":  "$dimming"
   }
 EOF
 
