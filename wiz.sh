@@ -122,13 +122,18 @@ function __wiz-light-set() {
       cmd='{"method":"setPilot","params":{"state":false}}'
       ;;
     rgb)
-      r=0
-      g=0
-      b=0
-      if [ ! -z "$3" ] ; then r=$3; fi
-      if [ ! -z "$4" ] ; then g=$4; fi
-      if [ ! -z "$5" ] ; then b=$5; fi
-      cmd='{"method":"setPilot","params":{"r":'"$r"',"g":'"$g"',"b":'"$b"'}}'
+      [[ ! -z "$3" ]] && r=$3 || r=0
+      [[ ! -z "$4" ]] && g=$4 || g=0
+      [[ ! -z "$5" ]] && b=$5 || b=0
+      [[ ! -z "$6" ]] && c=$6 || c=0
+      [[ ! -z "$7" ]] && w=$7 || w=0
+      cmd='{"method":"setPilot","params":{"r":'"$r"',"g":'"$g"',"b":'"$b"',"c":'"$c"',"w":'"$w"'}}'
+      # wiz home set nightstand rgb 56 0 255 0 112
+      ;;
+    dimming)
+      dimming=10
+      if [ ! -z "$3" ] ; then dimming=$3; fi
+      cmd='{"method":"setPilot","params":{"dimming":'"$dimming"'}}'
       ;;
     *)
       scene=$(__get_scene_id_from_name $2)
