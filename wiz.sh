@@ -3,12 +3,20 @@
 local PORT=38899
 declare -A lights
 
+function __wiz-init() {
+  # hyrdrate the arp table with the available nodes
+  __wiz-light-info-raw &>/dev/null
+
+  # hyrdate the lights array
+  __assign_lights $1
+}
+
 function wiz() {
   local ip=''
   local location=$(tolower $1)
   local command=$(tolower $2)
   local name=$(tolower $3)
-  __assign_lights $location
+  __wiz-init $location
   case $command in
     'set')
       ip=$(__wiz-light-ip-for $name)
