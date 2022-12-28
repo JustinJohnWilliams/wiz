@@ -90,6 +90,25 @@ EOF
 function __wiz-light-info-for() {
   name=$1
   ip=$(__wiz-light-ip-for $name)
+  if [ -z "$ip" ]
+  then
+    body=$(mktemp)
+    cat <<-EOF > "$body"
+    {
+      "id":       "$name",
+      "ip":       "error",
+      "state":    "error",
+      "scene":    "error",
+      "rgb":      "error",
+      "cw":       "error",
+      "dimming":  "error"
+    }
+EOF
+
+    jq . "${body}"
+    return
+  fi
+
   cmd='{"method":"getPilot"}'
   results=$(echo $cmd | nc -u -w 1 $ip $PORT)
   sceneId="$(echo $results | jq '.result.sceneId')"
