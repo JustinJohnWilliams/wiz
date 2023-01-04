@@ -295,3 +295,6 @@ function __assign_lights() {
   esac
 }
 
+function tolower() {
+  echo "$1" | awk '{print tolower($0)}'
+}
